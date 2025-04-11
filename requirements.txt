@@ -1,0 +1,4 @@
+request
+pandas
+scikit-learn
+ipykernel
