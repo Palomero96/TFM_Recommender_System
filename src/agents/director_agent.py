@@ -12,7 +12,7 @@ OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
 class DirectorAgent:
     def __init__(self):
         self.llm = Ollama(
-            model="qwen2:5",  # Ajusta según tu modelo
+            model=OLLAMA_MODEL,  # Ajusta según tu modelo
             base_url=OLLAMA_BASE_URL,
             temperature=0.3  # Menor aleatoriedad para decisiones críticas
         )
