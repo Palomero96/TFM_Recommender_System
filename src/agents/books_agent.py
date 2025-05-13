@@ -1,5 +1,19 @@
 from langchain_core.prompts import PromptTemplate
 from langchain_community.llms import Ollama
+from langchain_ollama import OllamaLLM
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough, RunnableLambda
+
+from operator import itemgetter
+import sys
+import sys
+from pathlib import Path
+
+# Añade el directorio src al path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+# Ahora puedes importar
+from retriever.retriever import BookRetriever
+
 import os
 from dotenv import load_dotenv
 load_dotenv()  # Carga .env
@@ -8,28 +22,61 @@ load_dotenv()  # Carga .env
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
 
-class BooksAgent:
+class BookAgent:
     def __init__(self):
-        self.llm = Ollama(
-            model="qwen2:5",  # Ajusta según tu modelo
+        self.llm = OllamaLLM(
+            model=OLLAMA_MODEL,  # Ajusta según tu modelo
             base_url=OLLAMA_BASE_URL,
             temperature=0.3  # Menor aleatoriedad para decisiones críticas
         )
-        self.prompt = PromptTemplate.from_template("""
-            Eres un agente director experto en clasificar consultas sobre recomendaciones.
-            Determina si el usuario busca:
-            - "libro" (recomendación de libros basados en un libro).
-            - "película" (recomendación de películas basadas en un libro).
-            - "serie" (recomendación de series basadas en un libro).
-            
-            Pregunta del usuario: {input}
-            
-            Responde SOLO con una de estas tres opciones: "libro", "película" o "serie".
-            No des explicaciones ni detalles.
-            """)
 
-    def analyze_query(self, state: dict) -> dict:
+        self.retriever = BookRetriever()
+
+        self.prompt = PromptTemplate.from_template("""
+            Eres un bibliotecario experto en recomendar libros a los usuarios basandote en sus preferencias.
+            Tienes que dar una recomendación basandote en el input que recibas del usuario (recibiras un libro) que te diga el usuario 
+            y teniendo en cuenta el contexto que tienes con la información de libros.
+            
+            Contexto: {context}
+                                            
+    
+            Pregunta del usuario: {input}
+                                                   
+            Genera la recomendación utilizando la siguiente estructura
+            📚 Libro recomendado: [Título exacto del libro]
+            ✍️ Autor: [Nombre del autor]
+            📅 Año de publicación: [Año]
+            🌟 Puntuación: [X.X/5] (si disponible)   
+                                                
+            Justifica la recomendación con un breve parrafo. No te extiendas mas de 3 lineas.
+
+            Justificación: [2-3 frases sobre similitudes con el libro de referencia]
+
+            Reglas:
+            1. Usa SOLO información de los libros proporcionados.
+            2. Si no hay libros similares, di: "No encontré coincidencias precisas".
+            3. Mantén la respuesta concisa y profesional.
+                                         
+            """)
+        
+        self.rag_chain = (
+            {
+                "context": self.retriever,
+                "input": itemgetter("input")
+            }
+            | self.prompt
+            | self.llm
+            | StrOutputParser()
+
+        )
+
+    def recommend_book(self, input):
         """Clasifica la consulta y devuelve la decisión."""
-        chain = self.prompt | self.llm
-        decision = chain.invoke({"input": state["input"]}).strip().lower()
-        return {"decision": decision, "input": state["input"]}
+        return self.rag_chain.invoke(input)
+
+
+
+
+if __name__ == "__main__":
+    agent = BookAgent()
+    print(agent.recommend_book("libros como Cien años de soledad"))
