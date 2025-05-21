@@ -9,3 +9,14 @@ https://www.kaggle.com/datasets/saurabhbagchi/books-dataset
 OpenLibrary (metadatos)
 Google Books (puntuaciones)
 BookWyrm (datos sociales)
+
+
+TODO
+- Terminar de montar las clases DONE
+- Datos de libros
+- Datos de Pelis
+- Corregir entrega anterior
+- Añadir nueva información
+- Avanzar con Desarrollo especifico de la contribucion
+- Avanzar Analisis de datos
+- Organizar bibliografia

@@ -1,9 +1,9 @@
 from langgraph.graph import StateGraph, END
 from typing import TypedDict
+import agents.general_agent
 import agents.director_agent, agents.books_agent, agents.movies_agent
 
-DIRECTOR = agents.director_agent.DirectorAgent()
-BOOKS_AGENT = agents.books_agent.BookAgent()
+
 
 #MOVIES_AGENT = agents.movies_agent.MoviesAgent()
 
@@ -15,36 +15,32 @@ class AgentState(TypedDict):
 
 def create_graph():    
     workflow = StateGraph(AgentState)
+    # Definimos los agentes
+    DIRECTOR = agents.director_agent.DirectorAgent()
+    BOOKS_AGENT = agents.books_agent.BookAgent()
+    MOVIES_AGENT = agents.movies_agent.MoviesAgent()
+    GENERAL_AGENT = agents.general_agent.GeneralAgent()
 
-    # Definimos los nodos
-    workflow.add_node("director", DIRECTOR.analyze_query)
-    workflow.add_node("book_agent", BOOKS_AGENT.recommend_book)
-    workflow.add_node("book_generic_agent", BOOKS_AGENT.recommend_book_generic)
-    #workflow.add_node("movie_agent", MOVIE_AGENT.recommend_movie)
-    #workflow.add_node("movie_generic_agent", MOVIE_AGENT.recommend_movie_generic)
-    #workflow.add_node("generate_response",RESPONSE_AGENT)
+    #Definimos los nodos del grafo
+    workflow.add_node("analyze", DIRECTOR.analyze_question)
+    workflow.add_node("recommend_book", BOOKS_AGENT.recommend_book)
+    workflow.add_node("recommend_movie", MOVIES_AGENT.recommend_movie)
+    workflow.add_node("general_response", GENERAL_AGENT.general_response)
 
     workflow.add_conditional_edges(
-        "director",
+        "analyze",
         lambda x: x["decision"],
         {
-            "books": "books_agent",
-            "books_generic": "books_generic_agent",
-            "movie": "movie_agent",
-            "movie_generic": "movie_generic_agent"
+            "libro": "recommend_book",
+            "pelicula": "recommend_movie",
+            "ninguna": "general_response"
         }
     )
 
-    # Definimos los ultimos vertices para generar respuesta
-    workflow.add_edge("books_agent", "generate_response")
-    workflow.add_edge("books_generic_agent", "generate_response")
-    workflow.add_edge("movies_agent", "generate_response")
-    workflow.add_edge("movies_generic_agent", "generate_response")
-
-    # Definimos el nodo de entrada y de salida
-    workflow.set_entry_point("director")
-    workflow.set_finish_point("generate_response")
-
+    workflow.set_entry_point("analyze")
+    workflow.add_edge("general_response", END)
+    workflow.add_edge("recommend_book", END)
+    workflow.add_edge("recommend_movie", END)
 
     return workflow.compile()
 

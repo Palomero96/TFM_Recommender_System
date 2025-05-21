@@ -5,14 +5,8 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 
 from operator import itemgetter
-import sys
-import sys
-from pathlib import Path
-
-# Añade el directorio src al path
-sys.path.insert(0, str(Path(__file__).parent.parent))
 # Ahora puedes importar
-from retriever.retriever import BookRetriever
+from retriever import Retriever
 
 import os
 from dotenv import load_dotenv
@@ -30,7 +24,7 @@ class BookAgent:
             temperature=0.3  # Menor aleatoriedad para decisiones críticas
         )
 
-        self.retriever = BookRetriever()
+        self.retriever = Retriever(collection_name="libros")
 
         self.prompt = PromptTemplate.from_template("""
             Eres un bibliotecario experto en recomendar libros a los usuarios basandote en sus preferencias.
@@ -61,7 +55,7 @@ class BookAgent:
         
         self.rag_chain = (
             {
-                "context": self.retriever,
+                "context": itemgetter("input") | self.retriever,
                 "input": itemgetter("input")
             }
             | self.prompt
@@ -71,7 +65,7 @@ class BookAgent:
         )
 
     def recommend_book(self, input):
-        """Clasifica la consulta y devuelve la decisión."""
+        """Recomienda un libro"""
         return self.rag_chain.invoke(input)
 
 
