@@ -1,0 +1,19 @@
+input,label
+"Me encantó El nombre del viento, ¿qué libro similar me recomiendas?",libro
+"Quiero leer algo de ciencia ficción como Dune, ¿alguna recomendación?",libro
+"¿Qué libros se parecen a la película Interestelar?",libro
+"I loved The Hobbit, can you suggest a similar book?",libro
+"Recommend me a thriller novel like Gone Girl.",libro
+"Books inspired by Blade Runner?",libro
+"Acabo de terminar El psicoanalista, ¿qué película parecida puedo ver?",pelicula
+"Recomiéndame películas similares a Matrix.",pelicula
+"Vi un libro sobre asesinos en serie, ¿hay alguna película parecida?",pelicula
+"I just finished reading 'The Silent Patient'. Any movie recommendations?",pelicula
+"Suggest a movie like Inception.",pelicula
+"Are there any good movies based on Stephen King novels?",pelicula
+"¿Quién escribió Crónica de una muerte anunciada?",general
+"¿Qué opinas de la adaptación cinematográfica de Dune?",general
+"Hola, ¿cómo estás?",general
+"What is the publication year of The Catcher in the Rye?",general
+"Is The Shining book better than the movie?",general
+"Hi! Can you help me with something?",general

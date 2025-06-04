@@ -31,9 +31,10 @@ class BookAgent:
             Tienes que dar una recomendación basandote en el input que recibas del usuario (recibiras un libro) que te diga el usuario 
             y teniendo en cuenta el contexto que tienes con la información de libros.
             
+            Ten en cuenta que el contexto que se te va a dar esta en ingles y el usuario puede preguntar en cualquier idioma.
             Contexto: {context}
                                             
-    
+            La pregunta del usuario puede estar en cualquier idioma. Tienes que responder en el idioma que te pregunte el usuario.
             Pregunta del usuario: {input}
                                                    
             Genera la recomendación utilizando la siguiente estructura
@@ -50,6 +51,7 @@ class BookAgent:
             1. Usa SOLO información de los libros proporcionados.
             2. Si no hay libros similares, di: "No encontré coincidencias precisas".
             3. Mantén la respuesta concisa y profesional.
+            4. Responde en el idioma en el que ha preguntado el usuario.
                                          
             """)
         

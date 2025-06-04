@@ -17,17 +17,17 @@ class DirectorAgent:
             temperature=0.3  # Menor aleatoriedad para decisiones críticas
         )
         self.prompt = PromptTemplate.from_template("""
-            Eres un agente director experto en clasificar consultas sobre recomendaciones de libros y peliculas en función de libros o generos.
+            Eres un agente director experto en clasificar consultas sobre recomendaciones de libros y peliculas. El usuario te pedirá recomendaciones en base a libros y generos
             Determina si el usuario busca:
-            - Recomendaciones de libro en base a un libro. Esta categoría se definirá como "libro".
-            - Recomendaciones de libro en base a generos. Esta categoría se definirá como "librogenero".
-            - Recomendaciones de peliculas en base a un libro. Esta categoría se definirá como "pelicula".
-            - Recomendaciones de peliculas en base a generos. Esta categoría se definirá como "peliculagenero".
+            - 
+            - Recomendaciones de libro en base a libros, peliculas o generos. Esta categoría se definirá como "libro".
+            - Recomendaciones de peliculas en base a libros, peliculas o generos. Esta categoría se definirá como "pelicula".
             - Si no te encaja en ninguna de estas opciones anteriores indica que es una respuesta "general"                                       
             
+            La pregunta que te haga el usuario puede estar  en cualquier idioma.
             Pregunta del usuario: {input}
             
-            Responde SOLO con una de estas tres opciones: "libro", "librogenero", "pelicula", "peliculagenero" o "general".
+            Responde SOLO con una de estas tres opciones: "libro", "pelicula", o "general".
             No des explicaciones ni detalles.
             """)
 
