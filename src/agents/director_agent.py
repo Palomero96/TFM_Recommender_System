@@ -12,9 +12,9 @@ OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
 class DirectorAgent:
     def __init__(self):
         self.llm = Ollama(
-            model=OLLAMA_MODEL,  # Ajusta según tu modelo
-            base_url=OLLAMA_BASE_URL,
-            temperature=0.3  # Menor aleatoriedad para decisiones críticas
+            model=os.getenv("OLLAMA_MODEL"),
+            base_url=os.getenv("OLLAMA_BASE_URL"),
+            temperature=os.getenv("OLLAMA_TEMPERATURE")
         )
         self.prompt = PromptTemplate.from_template("""
             Eres un agente director experto en clasificar consultas sobre recomendaciones de libros y peliculas. El usuario te pedirá recomendaciones en base a libros y generos
@@ -33,7 +33,11 @@ class DirectorAgent:
 
     def analyze_query(self, state: dict) -> dict:
         """Clasifica la consulta y devuelve la decisión."""
-        chain = self.prompt | self.llm
-        decision = chain.invoke({"input": state["input"]}).strip().lower()
-        return {"decision": decision, "input": state["input"]}
+        #TODO: Añadir la parte de ejemplos
+        # Genera el texto del prompt
+        prompt_text = self.prompt.format(input=state['input'])
+        # Pasa el prompt al LLM y devuelve la respuesta
+        decision = self.llm.invoke(prompt_text)
+        # Devuelve el estado original con la decisión añadida
+        return {**state, "decision": decision}
 

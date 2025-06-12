@@ -1,15 +1,13 @@
 import streamlit as st
 import time
 import os, sys
-from langchain.schema import HumanMessage, AIMessage
+
 from langchain.memory import ConversationBufferMemory
 from langchain.prompts import PromptTemplate
 from pathlib import Path
 
 # Añade el directorio src al path
-# Agregar la ruta del proyecto al PATH de Python
-project_root = Path(__file__).parent.parent  # Sube dos niveles desde app/
-sys.path.append(str(project_root))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from src.multiagent_manager import create_graph
 

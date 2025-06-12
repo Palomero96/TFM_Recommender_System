@@ -1,7 +1,7 @@
 from langchain_core.prompts import PromptTemplate
 from langchain_ollama import OllamaLLM
 
-from retriever import MovieRetriever
+from src.agents.retriever import  MovieRetriever
 
 import os
 from dotenv import load_dotenv
@@ -17,7 +17,7 @@ class MoviesAgent:
             temperature=os.getenv("OLLAMA_TEMPERATURE")
         )
         # Definimos el retriever que usaremos indicando la coleccion en la que buscara
-        self.retriever = MovieRetriever(collection_name="books") 
+        self.retriever = MovieRetriever(collection_name="Pruebas") 
         
         # Definimos el prompt que le pasaremos a nuestro modelo LLM para que realize la tarea que se le solicita
         self.prompt = PromptTemplate.from_template("""
@@ -52,15 +52,15 @@ class MoviesAgent:
             """)
         
       
-    def recommend_movie(self, user_input):
+    def recommend_movie(self,  state: dict) -> dict:
         # Obtiene el contexto formateado desde Milvus usando el retriever
-        context = self.retriever(user_input)
+        context = self.retriever(state['input'])
         # Genera el texto del prompt
-        prompt_text = self.prompt.format(context=context, input=user_input)
+        prompt_text = self.prompt.format(context=context, input=state['input'])
         # Pasa el prompt al LLM y devuelve la respuesta
         response = self.llm.invoke(prompt_text)
         # Devolvemos la respuesta
-        return response
+        return {**state, "output": response}
 
 
 

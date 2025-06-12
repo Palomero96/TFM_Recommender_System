@@ -1,22 +1,17 @@
 from langchain_core.prompts import PromptTemplate
-from langchain_openai import AzureChatOpenAI
+from langchain_ollama import OllamaLLM
 import os
 from dotenv import load_dotenv
 load_dotenv()  # Carga .env
 
-
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
-
-
 class GeneralAgent:
     def __init__(self):
-        self.llm = AzureChatOpenAI(
-        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-        api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-        deployment_name=os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME"),
-        openai_api_version=os.getenv("AZURE_OPENAI_API_VERSION")
-    )
+        # Definimos el modelo LLM que usaremos
+        self.llm = OllamaLLM(
+            model=os.getenv("OLLAMA_MODEL"),
+            base_url=os.getenv("OLLAMA_BASE_URL"),
+            temperature=os.getenv("OLLAMA_TEMPERATURE")
+        )
         self.prompt = PromptTemplate.from_template("""
                                                    
             Eres un agente general que va a recibir una pregunta de un usuario.
@@ -31,6 +26,10 @@ class GeneralAgent:
 
     def general_response(self, state: dict) -> dict:
         """Responde de forma breve y concisa a la pregunta general plantea el usuario"""
-        chain = self.prompt | self.llm
-        response = chain.invoke({"input": state["input"]}).strip().lower()
-        return {"output": response}
+        # Genera el texto del prompt
+        prompt_text = self.prompt.format(input=state['input'])
+        # Pasa el prompt al LLM y devuelve la respuesta
+        response = self.llm.invoke(prompt_text)
+        # Devolvemos la respuesta
+        return {**state, "output": response}
+    

@@ -1,7 +1,8 @@
 from langgraph.graph import StateGraph, END
 from typing import TypedDict
-import agents.general_agent
-import agents.director_agent, agents.books_agent, agents.movies_agent
+import sys,os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from src.agents import general_agent, director_agent, books_agent, movies_agent
 
 
 
@@ -11,18 +12,19 @@ import agents.director_agent, agents.books_agent, agents.movies_agent
 class AgentState(TypedDict):
     input: str
     output: str
+    context: str
     decision: str
 
 def create_graph():    
     workflow = StateGraph(AgentState)
     # Definimos los agentes
-    DIRECTOR = agents.director_agent.DirectorAgent()
-    BOOKS_AGENT = agents.books_agent.BookAgent()
-    MOVIES_AGENT = agents.movies_agent.MoviesAgent()
-    GENERAL_AGENT = agents.general_agent.GeneralAgent()
+    DIRECTOR = director_agent.DirectorAgent()
+    BOOKS_AGENT = books_agent.BookAgent()
+    MOVIES_AGENT = movies_agent.MoviesAgent()
+    GENERAL_AGENT = general_agent.GeneralAgent()
 
     #Definimos los nodos del grafo
-    workflow.add_node("analyze", DIRECTOR.analyze_question)
+    workflow.add_node("analyze", DIRECTOR.analyze_query)
     workflow.add_node("recommend_book", BOOKS_AGENT.recommend_book)
     workflow.add_node("recommend_movie", MOVIES_AGENT.recommend_movie)
     workflow.add_node("general_response", GENERAL_AGENT.general_response)
@@ -33,7 +35,7 @@ def create_graph():
         {
             "libro": "recommend_book",
             "pelicula": "recommend_movie",
-            "ninguna": "general_response"
+            "general": "general_response"
         }
     )
 

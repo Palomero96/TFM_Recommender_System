@@ -1,6 +1,6 @@
 from langchain_core.prompts import PromptTemplate
 from langchain_ollama import OllamaLLM
-from retriever import BookRetriever
+from src.agents.retriever import BookRetriever
 
 import os
 from dotenv import load_dotenv
@@ -13,10 +13,11 @@ class BookAgent:
         self.llm = OllamaLLM(
             model=os.getenv("OLLAMA_MODEL"),
             base_url=os.getenv("OLLAMA_BASE_URL"),
-            temperature=0.3
+            temperature=os.getenv("OLLAMA_TEMPERATURE")
         )
+        
         # Definimos el retriever que usaremos indicando la coleccion en la que buscara
-        self.retriever = BookRetriever(collection_name="books") 
+        self.retriever = BookRetriever(collection_name="Pruebas") 
         
         # Definimos el prompt que le pasaremos a nuestro modelo LLM para que realize la tarea que se le solicita
         self.prompt = PromptTemplate.from_template("""
@@ -47,15 +48,15 @@ class BookAgent:
             4. Responde en el idioma en el que ha preguntado el usuario.
             """)
 
-    def recommend_book(self, user_input: str) -> str:
+    def recommend_book(self,  state: dict) -> dict:
         # Obtiene el contexto formateado desde Milvus usando el retriever
-        context = self.retriever(user_input)
+        context = self.retriever(state['input'])
         # Genera el texto del prompt
-        prompt_text = self.prompt.format(context=context, input=user_input)
+        prompt_text = self.prompt.format(context=context, input=state['input'])
         # Pasa el prompt al LLM y devuelve la respuesta
         response = self.llm.invoke(prompt_text)
         # Devolvemos la respuesta
-        return response
+        return {**state, "output": response}
 
 
 
