@@ -20,3 +20,32 @@ TODO
 - Avanzar con Desarrollo especifico de la contribucion
 - Avanzar Analisis de datos
 - Organizar bibliografia
+
+
+1. Introducción a Sistemas Multiagente
+   1.1 Definición y características básicas
+   1.2 Aplicación a sistemas de recomendación
+
+2. Arquitecturas Multiagente para Recomendación
+   2.1 Enfoques centralizados vs distribuidos
+   2.2 Especialización de agentes
+   2.3 Mecanismos de coordinación
+
+3. Trabajos Relacionados
+   3.1 Sistemas multiagente en recomendación de contenido
+   3.2 Integración de múltiples dominios
+   3.3 Uso de grafos en sistemas MAS
+
+4. Innovación de nuestro enfoque
+   4.1 Combinación de MAS y RAG
+   4.2 Grafo multiagente para recomendación cruzada
+   4.3 Ventajas competitivas
+
+Introducción a Sistemas Multiagente
+Definición y características básicas
+Aplicación a sistemas de recomendación
+Arquitecturas Multiagente
+Especialización de agentes y tipos de agentes en MAS
+
+Combinación de MAS y RAG
+Grafo multiagente para recomendación cruzada

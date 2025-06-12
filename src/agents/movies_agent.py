@@ -1,31 +1,25 @@
 from langchain_core.prompts import PromptTemplate
-from langchain_community.llms import Ollama
 from langchain_ollama import OllamaLLM
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 
-from operator import itemgetter
-# Ahora puedes importar
-from retriever import Retriever
+from retriever import MovieRetriever
 
 import os
 from dotenv import load_dotenv
 load_dotenv()  # Carga .env
 
 
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
-
 class MoviesAgent:
     def __init__(self):
+        # Definimos el modelo LLM que usaremos
         self.llm = OllamaLLM(
-            model=OLLAMA_MODEL,  # Ajusta según tu modelo
-            base_url=OLLAMA_BASE_URL,
-            temperature=0.3  # Menor aleatoriedad para decisiones críticas
+            model=os.getenv("OLLAMA_MODEL"),
+            base_url=os.getenv("OLLAMA_BASE_URL"),
+            temperature=os.getenv("OLLAMA_TEMPERATURE")
         )
-
-        self.retriever = Retriever(collection_name="movies")
-
+        # Definimos el retriever que usaremos indicando la coleccion en la que buscara
+        self.retriever = MovieRetriever(collection_name="books") 
+        
+        # Definimos el prompt que le pasaremos a nuestro modelo LLM para que realize la tarea que se le solicita
         self.prompt = PromptTemplate.from_template("""
             Eres un critico de cine experto en recomendar libros a los usuarios basandote en sus preferencias.
             Tienes que dar una recomendación basandote en el input que recibas del usuario (recibiras un libro) que te diga el usuario 
@@ -57,17 +51,19 @@ class MoviesAgent:
                             
             """)
         
-        self.rag_chain = (
-            {
-                "context": itemgetter("input") | self.retriever,
-                "input": itemgetter("input")
-            }
-            | self.prompt
-            | self.llm
-            | StrOutputParser()
+      
+    def recommend_movie(self, user_input):
+        # Obtiene el contexto formateado desde Milvus usando el retriever
+        context = self.retriever(user_input)
+        # Genera el texto del prompt
+        prompt_text = self.prompt.format(context=context, input=user_input)
+        # Pasa el prompt al LLM y devuelve la respuesta
+        response = self.llm.invoke(prompt_text)
+        # Devolvemos la respuesta
+        return response
 
-        )
 
-    def recommend_movie(self, input):
-        """Recomienda un libro"""
-        return self.rag_chain.invoke(input)
+
+if __name__ == "__main__":
+    agent = MoviesAgent()
+    print(agent.recommend_movie("Pelicula similar a como Cien años de soledad"))
