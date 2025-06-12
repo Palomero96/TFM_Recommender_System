@@ -1,31 +1,79 @@
-from langchain_community.vectorstores import Milvus
-from langchain.embeddings import HuggingFaceEmbeddings
-from pymilvus import connections
+from langchain_milvus import Milvus
+from langchain_ollama import OllamaEmbeddings
 import os
 
-class Retriever:
+
+class BaseRetriever:
     def __init__(self, collection_name: str):
+        # Definimos la collecion en la que vamos a buscar
         self.collection_name = collection_name
-        # Conexión a Milvus
-        self._connect_to_milvus()
-        # Crear función de embeddings
-        self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        # Definimos el modelo de embedding que vamos a utilizar
+        self.embeddings = OllamaEmbeddings(
+                model=os.getenv("OLLAMA_MODEL"),
+                base_url=os.getenv("OLLAMA_BASE_URL")
+            )
         # Cargar vectorstore existente desde Milvus
         self.vectorstore = Milvus(
-            collection_name=self.collection_name,
-            embedding_function=self.embeddings,
-            connection_args={
-                "host": os.getenv("MILVUS_HOST", "localhost"),
-                "port": os.getenv("MILVUS_PORT", "19530")
-            }
+                    collection_name=self.collection_name,
+                    embedding_function=self.embeddings,
+                    vector_field="embedding",
+                    text_field="text",
+                    connection_args={
+                        "host": os.getenv("MILVUS_HOST"),
+                        "port": int(os.getenv("MILVUS_PORT"))
+                    }
         )
+    
+    def __call__(self, query: str) -> str:
+        # Hacemos la busqueda del documento que sea mas similar a lo que pide el usuario
+        docs = self.vectorstore.similarity_search(query,1)
+        # Se llama al metodo de formato para formatear el contexto
+        return self.format_context(docs)
 
-        self.retriever = self.vectorstore.as_retriever()
+    # Se definira en cada clase de Books y Movies
+    def format_context(self, results):
+        raise NotImplementedError("Debe implementar format_context en la subclase")
 
-    def _connect_to_milvus(self):
-        host = os.getenv("MILVUS_HOST", "localhost")
-        port = os.getenv("MILVUS_PORT", "19530")
-        connections.connect(host=host, port=port)
 
-    def __call__(self, input):
-        return self.retriever.invoke(input)
+class BookRetriever(BaseRetriever):
+    # Formateamos el documento que se ha encontrado
+    def format_context(self, results):
+        parts = []
+        for hit in results:
+            # Metadata externa de Milvus
+            outer_meta = getattr(hit, "metadata", {}) or {}
+            # Metadata interna con los datos reales
+            meta = outer_meta.get("metadata", {}) or {}
+            # Page_content que es la descripcion y el genero
+            description = getattr(hit, "page_content", "") or "" 
+            # Añadimos a la lista los atributos encontrados
+            parts.append(
+                f"Title: {meta.get('title', 'Unknown')}\n"
+                f"Author: {meta.get('Authors', 'Unknown')}\n"
+                f"Year: {meta.get('publication_year', 'Unknown')}\n"
+                f"Rating: {meta.get('average_rating', 'N/A')}\n"
+                f"{description}\n"
+            )
+        # Unimos los elementos de la lista y lo devolvemos
+        return "\n---\n".join(parts)
+    
+
+class MovieRetriever(BaseRetriever):
+    def format_context(self, results):
+        parts = []
+        for hit in results:
+            # Metadata externa de Milvus
+            outer_meta = getattr(hit, "metadata", {}) or {}
+            # Metadata interna con los datos reales
+            meta = outer_meta.get("metadata", {}) or {}
+            # Page_content que es la descripcion y el genero
+            description = getattr(hit, "page_content", "") or "" 
+            # Añadimos a la lista los atributos encontrados
+            parts.append(
+                f"Title: {meta.get('title', 'Unknown')}\n"
+                f"Director: {meta.get('director', 'Unknown')}\n"
+                f"Year: {meta.get('year', 'Unknown')}\n"
+                f"{description}\n"
+            )
+        # Unimos los elementos de la lista y lo devolvemos
+        return "\n---\n".join(parts)
