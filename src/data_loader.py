@@ -1,9 +1,9 @@
 from langchain_community.embeddings import OllamaEmbeddings
-from langchain_community.vectorstores import FAISS
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import CSVLoader
+from langchain.schema import Document
 from pymilvus import CollectionSchema, FieldSchema, DataType, Collection
 from pymilvus import connections
+import pandas as pd
 import os
 
 HOST = "localhost"
@@ -11,41 +11,92 @@ PORT = "19530"
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
 
+def embbeddingDataBooks(path):
+    df = pd.read_csv(path,sep=";")
 
+    # Lista para almacenar los Document
+    documents = []
+    for index, row in df.iterrows():
+        # Extraer los campos que van al contenido (embedding)
+        description = str(row.get("description", ""))
+        genre = str(row.get("genre", ""))
+        page_content = f"Description: {description}\nGenre: {genre}"
+        # Construir metadata con el resto de columnas
+        metadata = {
+            "isbn": row.get("isbn"),
+            "language_code": row.get("language_code"),
+            "average_rating": row.get("average_rating"),
+            "Authors": row.get("Authors"),
+            "num_pages": row.get("num_pages"),
+            "publication_year": row.get("publication_year"),
+            "title": row.get("title")
+        }
+        doc = Document(page_content=page_content, metadata=metadata)
+        documents.append(doc)
 
-def embeddingData(path,collection):
-    # Cargar y procesar el CSV
-    loader = CSVLoader(file_path=path)
-    data = loader.load()
-            
-    # Dividir los documento
+    # Dividir los documentos
     text_splitter = RecursiveCharacterTextSplitter(
                 chunk_size=1000,
                 chunk_overlap=200
             )
-    splits = text_splitter.split_documents(data)
+    splits = text_splitter.split_documents(documents)
     # Crear embeddings y vectorstore
     embeddings = OllamaEmbeddings(
-        model=OLLAMA_MODEL,
-        base_url=OLLAMA_BASE_URL
+        model=os.getenv("OLLAMA_MODEL"),
+        base_url=os.getenv("OLLAMA_BASE_URL"),
     )
-    vector = FAISS.from_documents(splits, embeddings)
-    data_to_milvus(collection,vector,splits)
+    # Obtener directamente los vectores
+    vector = embeddings.embed_documents([doc.page_content for doc in splits])
+    data_to_milvus("books",vector,splits)
 
-def data_to_milvus(collection,db,texts):
-    connections.connect(host=HOST, port=PORT)
-    #print(utility.list_collections())  # Muestra las colecciones existentes
+def embeddingDataMovies(path):
+
+    df = pd.read_csv(path,sep=",")
+    # Lista para almacenar los Document
+    documents = []
+    for index, row in df.iterrows():
+        # Extraer los campos que van al contenido (embedding)
+        description = str(row.get("description", ""))
+        genre = str(row.get("genre", ""))
+        page_content = f"Description: {description}\nGenre: {genre}"
+        # Construir metadata con el resto de columnas
+        metadata = {
+            "title": row.get("title"),
+            "spoken_languages": row.get("spoken_languages"),
+            "Vote_reescaled": row.get("Vote_reescaled"),
+            "original_language": row.get("original_language"),
+            "release_year": row.get("release_year")
+            
+        }
+        doc = Document(page_content=page_content, metadata=metadata)
+        documents.append(doc)
+
+    # Dividir los documentos
+    text_splitter = RecursiveCharacterTextSplitter(
+                chunk_size=1000,
+                chunk_overlap=200
+            )
+    splits = text_splitter.split_documents(documents)
+    # Crear embeddings y vectorstore
+    embeddings = OllamaEmbeddings(
+        model=os.getenv("OLLAMA_MODEL"),
+        base_url=os.getenv("OLLAMA_BASE_URL"),
+    )
+    vector = embeddings.embed_documents([doc.page_content for doc in splits])
+    data_to_milvus("movies",vector,splits)
+
+def data_to_milvus(collection_name,vector,splits):
+    connections.connect(host=os.getenv("MILVUS_HOST"), port=int(os.getenv("MILVUS_PORT")))
     # Nombre de la colección donde guardarás los vectores
-    COLLECTION_NAME = collection
-
+    COLLECTION_NAME = collection_name
     # Extrae los embeddings y documentos de tu FAISS
-    vectors = db.index.reconstruct_n(0, db.index.ntotal)  # Obtiene todos los vectores
-    documents = [doc.page_content for doc in texts]       # Tus textos originales
-    metadatas = [doc.metadata for doc in texts]           # Metadatos asociados
+    vectors = vector.index.reconstruct_n(0, vector.index.ntotal)  # Obtiene todos los vectores
+    documents = [doc.page_content for doc in splits]       # Tus textos originales
+    metadatas = [doc.metadata for doc in splits]           # Metadatos asociados
 
     # Crea la colección en Milvus (si no existe)
     if not utility.has_collection(COLLECTION_NAME):
-        dim = len(vectors[0])  # Dimensión de tus embeddings (ej: 384, 768, etc.)
+        dim = len(vectors[0])  # Dimensión de los embeddings
         
         fields = [
             FieldSchema(name="id", dtype=DataType.INT64, is_primary=True, auto_id=True),
@@ -63,23 +114,23 @@ def data_to_milvus(collection,db,texts):
             "params": {"M": 16, "efConstruction": 200}
         }
         collection.create_index(field_name="embedding", index_params=index_params)
-
     # Guarda los datos en Milvus
     data = [
         vectors,                    # Embeddings
         documents,                  # Textos originales
         metadatas                   # Metadatos (opcional)
     ]
-
     # Inserta los datos
     collection = Collection(COLLECTION_NAME)
-    mr = collection.insert(data)
+    collection.insert(data)
+    collection.flush()
+    collection.load()
     #print(f"Vectores insertados: {mr.insert_count}")
 
 
 
 if __name__=='main':
     #Cargamos los datos de los libros
-    embeddingData("books.csv","books")
+    embbeddingDataBooks("books.csv")
     #Cargamos los datos de las peliculas
-    embeddingData("movies.csv","movies")
+    embeddingDataMovies("movies.csv")
