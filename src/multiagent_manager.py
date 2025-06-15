@@ -48,5 +48,14 @@ def create_graph():
 
 
 
-if __name__ == 'main':
+if __name__ == '__main__':
     app = create_graph()
+    initial_state = {
+            "input": "que temperatura hace en madrid",
+            "output": "",
+            "context": "",
+            "decision": ""
+        }
+
+    final_state = app.invoke(initial_state)
+    print(final_state)
