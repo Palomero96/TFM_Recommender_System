@@ -25,7 +25,7 @@ class BookAgent:
             Tienes que dar una recomendación basandote en el input que recibas del usuario (recibiras un libro) que te diga el usuario 
             y teniendo en cuenta el contexto que tienes con la información de libros.
             
-            Ten en cuenta que el contexto que se te va a dar esta en ingles y el usuario puede preguntar en cualquier idioma.
+            Ten en cuenta que el contexto que se te va a dar esta en ingles y el usuario puede preguntar en cualquier idioma. 
             Contexto: {context}
                                             
             La pregunta del usuario puede estar en cualquier idioma. Tienes que responder en el idioma que te pregunte el usuario.
@@ -37,12 +37,12 @@ class BookAgent:
             📅 Año de publicación: [Año]
             🌟 Puntuación: [X.X/5] (si disponible)   
                                                 
-            Justifica la recomendación con un breve parrafo. No te extiendas mas de 3 lineas.
+            Justifica la recomendación con un breve parrafo. No te extiendas mas de 3 lineas. Habla solo del libro que vas a recomendar
 
             Justificación: [2-3 frases sobre similitudes con el libro de referencia]
 
             Reglas:
-            1. Usa SOLO información de los libros proporcionados.
+            1. Usa SOLO información de los libros proporcionados y habla unicamente del libro que vas a recomendar.
             2. Si no hay libros similares, di: "No encontré coincidencias precisas".
             3. Mantén la respuesta concisa y profesional.
             4. Responde en el idioma en el que ha preguntado el usuario.

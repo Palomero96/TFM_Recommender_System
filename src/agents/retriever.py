@@ -1,4 +1,7 @@
-from langchain_milvus import Milvus
+
+from pymilvus import connections
+from langchain_community.vectorstores import Milvus
+
 from langchain_ollama import OllamaEmbeddings
 import os
 
@@ -12,16 +15,17 @@ class BaseRetriever:
                 model=os.getenv("OLLAMA_MODEL"),
                 base_url=os.getenv("OLLAMA_BASE_URL")
             )
+        connections.connect(
+            alias="default",
+            host=os.getenv("MILVUS_HOST"),
+            port=os.getenv("MILVUS_PORT")
+        )
         # Cargar vectorstore existente desde Milvus
         self.vectorstore = Milvus(
                     collection_name=self.collection_name,
                     embedding_function=self.embeddings,
                     vector_field="embedding",
-                    text_field="text",
-                    connection_args={
-                        "host": os.getenv("MILVUS_HOST"),
-                        "port": int(os.getenv("MILVUS_PORT"))
-                    }
+                    text_field="text"
         )
     
     def __call__(self, query: str) -> str:
