@@ -1,0 +1,56 @@
+# Ejemplos de Clasificación de Consultas
+
+Usuario: Me encantó El nombre del viento, ¿qué libro similar me recomiendas?
+Categoría: libro
+
+Usuario: Quiero leer algo de ciencia ficción como Dune, ¿alguna recomendación?
+Categoría: libro
+
+Usuario: ¿Qué libros se parecen a la película Interestelar?
+Categoría: libro
+
+Usuario: I loved The Hobbit, can you suggest a similar book?
+Categoría: libro
+
+Usuario: Recommend me a thriller novel like Gone Girl.
+Categoría: libro
+
+Usuario: Books inspired by Blade Runner?
+Categoría: libro
+
+Usuario: Acabo de terminar El psicoanalista, ¿qué película parecida puedo ver?
+Categoría: pelicula
+
+Usuario: Recomiéndame películas similares a Matrix.
+Categoría: pelicula
+
+Usuario: Vi un libro sobre asesinos en serie, ¿hay alguna película parecida?
+Categoría: pelicula
+
+Usuario: I just finished reading 'The Silent Patient'. Any movie recommendations?
+Categoría: pelicula
+
+Usuario: Suggest a movie like Inception.
+Categoría: pelicula
+
+Usuario: Are there any good movies based on Stephen King novels?
+Categoría: pelicula
+
+Usuario: ¿Quién escribió Crónica de una muerte anunciada?
+Categoría: general
+
+Usuario: ¿Qué opinas de la adaptación cinematográfica de Dune?
+Categoría: general
+
+Usuario: Hola, ¿cómo estás?
+Categoría: general
+
+Usuario: What is the publication year of The Catcher in the Rye?
+Categoría: general
+
+Usuario: Is The Shining book better than the movie?
+Categoría: general
+
+Usuario: Hi! Can you help me with something?
+Categoría: general
+"""
