@@ -31,16 +31,22 @@ class BookAgent:
             La pregunta del usuario puede estar en cualquier idioma. Tienes que responder en el idioma que te pregunte el usuario.
             Pregunta del usuario: {input}
                                                    
-            Genera la recomendación utilizando la siguiente estructura
-            📚 Libro recomendado: [Título exacto del libro]
-            ✍️ Autor: [Nombre del autor]
-            📅 Año de publicación: [Año]
-            🌟 Puntuación: [X.X/5] (si disponible)   
-                                                
-            Justifica la recomendación con un breve parrafo. No te extiendas mas de 3 lineas. Habla solo del libro que vas a recomendar
+            Recomienda un único libro al usuario utilizando la siguiente estructura de salida:
 
-            Justificación: [2-3 frases sobre similitudes con el libro de referencia]
+            📚 Libro recomendado: [Título exacto del libro]  
+            ✍️ Autor(es): [Nombre del autor o autores]  
+            📅 Año de publicación: [Año]  (si disponible) 
+            🌐 Género: [Género]  (si disponible) 
+            📄 Número de páginas: [Número de páginas]  (si disponible) 
+            🌟 Puntuación media: [X.X/5] (si está disponible)
 
+            Justifica la recomendación en un breve párrafo. Habla únicamente del libro que vas a recomendar, basándote en su descripción, género y los datos que el usuario ha proporcionado en su consulta:  
+            {input}
+
+            Ten en cuenta si el libro tiene una puntuación alta, si pertenece a un género que encaje con los gustos del usuario, o si su descripción lo hace especialmente relevante para su interés.
+
+            Justificación: [Párrafo de justificación de la recomendación]
+                                                   
             Reglas:
             1. Usa SOLO información de los libros proporcionados y habla unicamente del libro que vas a recomendar.
             2. Si no hay libros similares, di: "No encontré coincidencias precisas".

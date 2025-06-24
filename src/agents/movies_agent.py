@@ -30,22 +30,24 @@ class MoviesAgent:
                                             
             La pregunta del usuario puede estar en cualquier idioma. Tienes que responder en el idioma que te pregunte el usuario.
             Pregunta del usuario: {input}
-                                                   
-            Genera la recomendación utilizando la siguiente estructura
-            
-            📚 Pelicula recomendado: [Título exacto del libro]
-            ✍️ Autor: [Nombre del autor] (si disponible) 
-            📅 Año de publicación: [Año] (si disponible) 
-            🌟 Puntuación: [X.X/5] (si disponible)   
 
+            Recomienda una única película al usuario utilizando la siguiente estructura de salida:                                          
+            🎬 Película recomendada: [Título exacto de la película]  
+            🗓️ Año de estreno: [Año] (si disponible)  
+            🌐 Idioma original: [Idioma] (si disponible)  
+            🎭 Género: [Género]  
+            🌟 Puntuación: [X.X/5] (si disponible)
 
-            Justifica la recomendación con un breve parrafo. No te extiendas mas de 3 lineas.
+            Justifica brevemente por qué esta película es adecuada según la descripción de la película y el siguiente input proporcionado por el usuario:  
+            {input}
 
-            Justificación: [2-3 frases sobre similitudes con el libro de referencia]
+            La justificación debe ser concisa (máximo 2-3 frases) y centrarse en las similitudes o elementos que encajan con los gustos o intereses del usuario.
+
+            Justificación: [2-3 frases sobre similitudes con el libro de referencia o el input]
 
             Reglas:
             1. Usa SOLO información de las peliculas proporcionados.
-            2. Si no hay libros similares, di: "No encontré coincidencias precisas".
+            2. Si no hay peliculas similares, di: "No encontré coincidencias precisas".
             3. Mantén la respuesta concisa y profesional.
             4. Responde en el idioma en el que ha preguntado el usuario.
                             
