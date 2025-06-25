@@ -1,0 +1,19 @@
+graph TD
+    A[TFM_Recommender_System]
+    A --> data
+    data --> RagDocker
+    data --> books.csv
+    data --> movies.csv
+    data --> ejemplos.txt
+    A --> exploration
+    A --> src
+    src --> agents
+    agents --> director_agent.py
+    agents --> books_agent.py
+    agents --> movies_agent.py
+    agents --> general_agent.py
+    src --> ingestion
+    ingestion --> data_loader.py
+    A --> requirements[requirements.txt]
+    A --> readme[README.md]
+    A --> env[.env]
