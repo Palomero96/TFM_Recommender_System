@@ -4,7 +4,8 @@ from langchain_community.vectorstores import Milvus
 
 from langchain_ollama import OllamaEmbeddings
 import os
-
+from dotenv import load_dotenv
+load_dotenv()  # Carga .env
 
 class BaseRetriever:
     def __init__(self, collection_name: str):
@@ -66,6 +67,7 @@ class MovieRetriever(BaseRetriever):
     def format_context(self, results):
         parts = []
         for hit in results:
+
             # Metadata externa de Milvus
             outer_meta = getattr(hit, "metadata", {}) or {}
             # Metadata interna con los datos reales

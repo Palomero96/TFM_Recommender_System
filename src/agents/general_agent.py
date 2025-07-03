@@ -12,6 +12,7 @@ class GeneralAgent:
             base_url=os.getenv("OLLAMA_BASE_URL"),
             temperature=os.getenv("OLLAMA_TEMPERATURE")
         )
+        # Definimos el prompt
         self.prompt = PromptTemplate.from_template("""
                                                    
             Eres un agente general que va a recibir una pregunta de un usuario.
@@ -25,7 +26,7 @@ class GeneralAgent:
             """)
 
     def general_response(self, state: dict) -> dict:
-        """Responde de forma breve y concisa a la pregunta general plantea el usuario"""
+        """Responde de forma breve y concisa a la pregunta general que plantea el usuario"""
         # Genera el texto del prompt
         prompt_text = self.prompt.format(input=state['input'])
         # Pasa el prompt al LLM y devuelve la respuesta

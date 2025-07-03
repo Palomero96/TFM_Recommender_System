@@ -1,6 +1,5 @@
 import streamlit as st
 import os, sys
-from pathlib import Path
 
 # Añade el directorio src al path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

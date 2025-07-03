@@ -87,11 +87,11 @@ def embeddingDataMovies(path):
 
 def data_to_milvus(collection_name,vector,splits):
     connections.connect(host=os.getenv("MILVUS_HOST"), port=int(os.getenv("MILVUS_PORT")))
-    # Nombre de la colección donde guardarás los vectores
+    # Nombre de la colección donde se guardan los vectores
     COLLECTION_NAME = collection_name
-    # Extrae los embeddings y documentos de tu FAISS
+    # Extrae los embeddings y documentos
     vectors = vector.index.reconstruct_n(0, vector.index.ntotal)  # Obtiene todos los vectores
-    documents = [doc.page_content for doc in splits]       # Tus textos originales
+    documents = [doc.page_content for doc in splits]       # Textos originales
     metadatas = [doc.metadata for doc in splits]           # Metadatos asociados
 
     # Crea la colección en Milvus (si no existe)
@@ -104,16 +104,9 @@ def data_to_milvus(collection_name,vector,splits):
             FieldSchema(name="text", dtype=DataType.VARCHAR, max_length=65535),
             FieldSchema(name="metadata", dtype=DataType.JSON)
         ]
-        schema = CollectionSchema(fields, description="Índice de embeddings")
+        schema = CollectionSchema(fields, description="Embeddings vectoriales con descripciones y metadatos")
         collection = Collection(name=COLLECTION_NAME, schema=schema)
-        
-        # Crea un índice HNSW para búsquedas eficientes
-        index_params = {
-            "metric_type": "L2",  # Distancia euclidiana (usa "IP" para producto interno)
-            "index_type": "HNSW",
-            "params": {"M": 16, "efConstruction": 200}
-        }
-        collection.create_index(field_name="embedding", index_params=index_params)
+
     # Guarda los datos en Milvus
     data = [
         vectors,                    # Embeddings

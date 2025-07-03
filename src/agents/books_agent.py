@@ -27,10 +27,7 @@ class BookAgent:
             
             Ten en cuenta que el contexto que se te va a dar esta en ingles y el usuario puede preguntar en cualquier idioma. 
             Contexto: {context}
-                                            
-            La pregunta del usuario puede estar en cualquier idioma. Tienes que responder en el idioma que te pregunte el usuario.
-            Pregunta del usuario: {input}
-                                                   
+                                       
             Recomienda un único libro al usuario utilizando la siguiente estructura de salida:
 
             📚 Libro recomendado: [Título exacto del libro]  
@@ -39,13 +36,14 @@ class BookAgent:
             🌐 Género: [Género]  (si disponible) 
             📄 Número de páginas: [Número de páginas]  (si disponible) 
             🌟 Puntuación media: [X.X/5] (si está disponible)
+                                                   
+            Justificación: [Párrafo de justificación de la recomendación]
 
-            Justifica la recomendación en un breve párrafo. Habla únicamente del libro que vas a recomendar, basándote en su descripción, género y los datos que el usuario ha proporcionado en su consulta:  
+            Justifica la recomendación en un breve párrafo. Habla únicamente del libro que vas a recomendar, basándote en su descripción, género y 
+            los datos que el usuario ha proporcionado en su consulta. La consulta del usuario es la siguiente:  
             {input}
 
             Ten en cuenta si el libro tiene una puntuación alta, si pertenece a un género que encaje con los gustos del usuario, o si su descripción lo hace especialmente relevante para su interés.
-
-            Justificación: [Párrafo de justificación de la recomendación]
                                                    
             Reglas:
             1. Usa SOLO información de los libros proporcionados y habla unicamente del libro que vas a recomendar.

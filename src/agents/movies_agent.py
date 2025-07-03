@@ -28,8 +28,6 @@ class MoviesAgent:
             Ten en cuenta que el contexto que se te va a dar esta en ingles y el usuario puede preguntar en cualquier idioma.
             Contexto: {context}
                                             
-            La pregunta del usuario puede estar en cualquier idioma. Tienes que responder en el idioma que te pregunte el usuario.
-            Pregunta del usuario: {input}
 
             Recomienda una única película al usuario utilizando la siguiente estructura de salida:                                          
             🎬 Película recomendada: [Título exacto de la película]  
@@ -37,13 +35,16 @@ class MoviesAgent:
             🌐 Idioma original: [Idioma] (si disponible)  
             🎭 Género: [Género]  
             🌟 Puntuación: [X.X/5] (si disponible)
+                                                   
+            Justificación: [Párrafo de justificación de la recomendación]
 
-            Justifica brevemente por qué esta película es adecuada según la descripción de la película y el siguiente input proporcionado por el usuario:  
+
+            Justifica la recomendación en un breve párrafo. Habla únicamente de la pelicula que vas a recomendar, basándote en su descripción, género y
+            los datos que el usuario ha proporcionado en su consulta. La consulta del usuario es la siguiente:  
             {input}
 
-            La justificación debe ser concisa (máximo 2-3 frases) y centrarse en las similitudes o elementos que encajan con los gustos o intereses del usuario.
+            Ten en cuenta si la pelicula tiene una puntuación alta, si pertenece a un género que encaje con los gustos del usuario, o si su descripción lo hace especialmente relevante para su interés.
 
-            Justificación: [2-3 frases sobre similitudes con el libro de referencia o el input]
 
             Reglas:
             1. Usa SOLO información de las peliculas proporcionados.

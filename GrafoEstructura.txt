@@ -17,3 +17,11 @@ graph TD
     A --> requirements[requirements.txt]
     A --> readme[README.md]
     A --> env[.env]
+
+
+
+graph TD
+    A[data]
+    A --> RagDocker
+    RagDocker --> volumes
+    RagDocker --> docker-compose.yml
