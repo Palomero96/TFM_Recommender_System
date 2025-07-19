@@ -49,3 +49,8 @@ Especialización de agentes y tipos de agentes en MAS
 
 Combinación de MAS y RAG
 Grafo multiagente para recomendación cruzada
+
+TODO
+- Carga de datos: ver como gestionamos los metadatos
+- Cambiar los prompts, la forma de invocar el retriever
+- 

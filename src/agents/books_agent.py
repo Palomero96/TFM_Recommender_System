@@ -17,7 +17,7 @@ class BookAgent:
         )
         
         # Definimos el retriever que usaremos indicando la coleccion en la que buscara
-        self.retriever = BookRetriever(collection_name="Pruebas") 
+        self.retriever = BookRetriever(collection_name="books") 
         
         # Definimos el prompt que le pasaremos a nuestro modelo LLM para que realize la tarea que se le solicita
         self.prompt = PromptTemplate.from_template("""
@@ -27,15 +27,21 @@ class BookAgent:
             
             Ten en cuenta que el contexto que se te va a dar esta en ingles y el usuario puede preguntar en cualquier idioma. 
             Contexto: {context}
-                                       
+                                                   
+            Reglas:
+            1. Usa SOLO información del libro proporcionado y habla unicamente del libro que vas a recomendar.
+            2. Si no hay libros similares, di: "No encontré coincidencias precisas".
+            3. Mantén la respuesta concisa y profesional.
+            4. Tienes que responder obligatoriamente en el idioma que te hable el usuario. Si te habla en ingles respondes en ingles.
+                                                       
             Recomienda un único libro al usuario utilizando la siguiente estructura de salida:
 
             📚 Libro recomendado: [Título exacto del libro]  
             ✍️ Autor(es): [Nombre del autor o autores]  
-            📅 Año de publicación: [Año]  (si disponible) 
-            🌐 Género: [Género]  (si disponible) 
-            📄 Número de páginas: [Número de páginas]  (si disponible) 
-            🌟 Puntuación media: [X.X/5] (si está disponible)
+            📅 Año de publicación: [Año]   
+            🌐 Género: [Género]   
+            📄 Número de páginas: [Número de páginas]   
+            🌟 Puntuación media: [X.X/5] 
                                                    
             Justificación: [Párrafo de justificación de la recomendación]
 
@@ -45,16 +51,15 @@ class BookAgent:
 
             Ten en cuenta si el libro tiene una puntuación alta, si pertenece a un género que encaje con los gustos del usuario, o si su descripción lo hace especialmente relevante para su interés.
                                                    
-            Reglas:
-            1. Usa SOLO información de los libros proporcionados y habla unicamente del libro que vas a recomendar.
-            2. Si no hay libros similares, di: "No encontré coincidencias precisas".
-            3. Mantén la respuesta concisa y profesional.
-            4. Responde en el idioma en el que ha preguntado el usuario.
+            
             """)
 
     def recommend_book(self,  state: dict) -> dict:
         # Obtiene el contexto formateado desde Milvus usando el retriever
         context = self.retriever(state['input'])
+        print("hola")
+        print(context)
+        print("hola")
         # Genera el texto del prompt
         prompt_text = self.prompt.format(context=context, input=state['input'])
         # Pasa el prompt al LLM y devuelve la respuesta
@@ -66,4 +71,10 @@ class BookAgent:
 
 if __name__ == "__main__":
     agent = BookAgent()
-    print(agent.recommend_book("Libro similar a como Cien años de soledad"))
+    initial_state = {
+            "input": "Quiero un libro comics",
+            "output": "",
+            "context": "",
+            "decision": ""
+        }
+    print(agent.recommend_book(initial_state))

@@ -31,7 +31,7 @@ class BaseRetriever:
     
     def __call__(self, query: str) -> str:
         # Hacemos la busqueda del documento que sea mas similar a lo que pide el usuario
-        docs = self.vectorstore.similarity_search(query,1)
+        docs = self.vectorstore.similarity_search(query,10)
         # Se llama al metodo de formato para formatear el contexto
         return self.format_context(docs)
 
@@ -77,8 +77,9 @@ class MovieRetriever(BaseRetriever):
             # Añadimos a la lista los atributos encontrados
             parts.append(
                 f"Title: {meta.get('title', 'Unknown')}\n"
-                f"Director: {meta.get('director', 'Unknown')}\n"
-                f"Year: {meta.get('year', 'Unknown')}\n"
+                f"Rating: {meta.get('Vote_reescaled', 'Unknown')}\n"
+                f"Year: {meta.get('release_year', 'Unknown')}\n"
+                f"Original_language: {meta.get('original_language', 'Unknown')}\n"
                 f"{description}\n"
             )
         # Unimos los elementos de la lista y lo devolvemos

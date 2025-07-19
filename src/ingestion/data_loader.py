@@ -2,7 +2,7 @@ from langchain_community.embeddings import OllamaEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema import Document
 from pymilvus import CollectionSchema, FieldSchema, DataType, Collection
-from pymilvus import connections
+from pymilvus import connections, utility
 import pandas as pd
 import os
 
@@ -13,7 +13,6 @@ OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
 
 def embbeddingDataBooks(path):
     df = pd.read_csv(path,sep=";")
-
     # Lista para almacenar los Document
     documents = []
     for index, row in df.iterrows():
@@ -42,16 +41,17 @@ def embbeddingDataBooks(path):
     splits = text_splitter.split_documents(documents)
     # Crear embeddings y vectorstore
     embeddings = OllamaEmbeddings(
-        model=os.getenv("OLLAMA_MODEL"),
-        base_url=os.getenv("OLLAMA_BASE_URL"),
+        model="qwen2.5",
+        base_url="http://localhost:11434",
     )
     # Obtener directamente los vectores
     vector = embeddings.embed_documents([doc.page_content for doc in splits])
     data_to_milvus("books",vector,splits)
+    print("TerminoLibro")
 
 def embeddingDataMovies(path):
 
-    df = pd.read_csv(path,sep=",")
+    df = pd.read_csv(path,sep=";",encoding="latin-1")
     # Lista para almacenar los Document
     documents = []
     for index, row in df.iterrows():
@@ -79,18 +79,18 @@ def embeddingDataMovies(path):
     splits = text_splitter.split_documents(documents)
     # Crear embeddings y vectorstore
     embeddings = OllamaEmbeddings(
-        model=os.getenv("OLLAMA_MODEL"),
-        base_url=os.getenv("OLLAMA_BASE_URL"),
+        model="qwen2.5",
+        base_url="http://localhost:11434",
     )
     vector = embeddings.embed_documents([doc.page_content for doc in splits])
     data_to_milvus("movies",vector,splits)
 
 def data_to_milvus(collection_name,vector,splits):
-    connections.connect(host=os.getenv("MILVUS_HOST"), port=int(os.getenv("MILVUS_PORT")))
+    connections.connect(host=HOST, port=PORT)
     # Nombre de la colección donde se guardan los vectores
     COLLECTION_NAME = collection_name
     # Extrae los embeddings y documentos
-    vectors = vector.index.reconstruct_n(0, vector.index.ntotal)  # Obtiene todos los vectores
+    vectors = vector  # Obtiene todos los vectores
     documents = [doc.page_content for doc in splits]       # Textos originales
     metadatas = [doc.metadata for doc in splits]           # Metadatos asociados
 
@@ -117,13 +117,15 @@ def data_to_milvus(collection_name,vector,splits):
     collection = Collection(COLLECTION_NAME)
     collection.insert(data)
     collection.flush()
-    collection.load()
+    #collection.load()
     #print(f"Vectores insertados: {mr.insert_count}")
 
 
 
-if __name__=='main':
+if __name__=='__main__':
+    
     #Cargamos los datos de los libros
-    embbeddingDataBooks("books.csv")
+    embbeddingDataBooks("C:\\Users\\palom\\Documents\\GitHub\\TFM_Recommender_System\\data\\books.csv")
+
     #Cargamos los datos de las peliculas
-    embeddingDataMovies("movies.csv")
+    embeddingDataMovies("C:\\Users\\palom\\Documents\\GitHub\\TFM_Recommender_System\\data\\\movies.csv")

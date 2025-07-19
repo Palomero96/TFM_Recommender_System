@@ -9,6 +9,7 @@ Categoría: libro
 Usuario: ¿Qué libros se parecen a la película Interestelar?
 Categoría: libro
 
+
 Usuario: I loved The Hobbit, can you suggest a similar book?
 Categoría: libro
 
@@ -17,6 +18,9 @@ Categoría: libro
 
 Usuario: Books inspired by Blade Runner?
 Categoría: libro
+
+Usuario: Me gusta mucho el drama del libro Romeo y Julieta, recomiendame una pelicula del estilo
+Categoría: pelicula
 
 Usuario: Acabo de terminar El psicoanalista, ¿qué película parecida puedo ver?
 Categoría: pelicula
